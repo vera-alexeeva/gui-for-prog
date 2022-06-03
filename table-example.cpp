@@ -1,11 +1,13 @@
 #include <gtk/gtk.h>
-#include <string> 
+#include <string>
+#include <sstream>
 #include "sorting.hpp"
 
 
 GtkWidget *window;
 GtkWidget *table_box;
 GtkWidget *sorted_box;
+GtkEntry *entry;
 
 /*
 int random_between(int x, int y) {
@@ -122,8 +124,8 @@ void create_table(int i, TMatr a) {
     delete_table(table_box);
     delete_table(sorted_box);
 	
-	int rows = 2*(getN());
-    int columns = 2*(getN());
+	int rows = 2*n;
+    int columns = 2*n;
 	
 	if(i == 1){
 		input_matrix(a);
@@ -148,8 +150,8 @@ void create_sorted(TMatr a) {
 	zerofication(a);
 	sorting(a);
 	
-	int rows = 2*(getN());
-    int columns = 2*(getN());
+	int rows = 2*n;
+    int columns = 2*n;
 	
     GtkWidget *table = gtk_table_new(rows, columns, FALSE);
     gtk_table_set_col_spacings(GTK_TABLE(table), 20);
@@ -160,11 +162,18 @@ void create_sorted(TMatr a) {
 }
 
 void b1(GtkWidget *widget, gpointer data) {
+	n = getNFromFile();
 	create_table(1, a);
 }
 
 void b2(GtkWidget *widget, gpointer data) {
-	create_table(2, a);
+	
+	const char *value;
+    value = gtk_entry_get_text (entry);
+    stringstream strValue;
+	strValue << value;
+	strValue >> n;
+    create_table(2, a);
 }
 
 void b3(GtkWidget *widget, gpointer data) {
@@ -211,6 +220,8 @@ int main(int argc, char *argv[]) {
     
     GtkWidget *vbox;
     GtkWidget *bbox;
+    
+    
 
     gtk_init(&argc, &argv);
 
@@ -225,6 +236,9 @@ int main(int argc, char *argv[]) {
 	bbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     table_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     sorted_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    
+    entry = (GtkEntry*)gtk_entry_new();
+    gtk_entry_set_text (entry, "4");
     
     GtkWidget *button1 = gtk_button_new_with_label("Table from file");
     gtk_widget_set_size_request(button1, 70, 30);
@@ -245,8 +259,9 @@ int main(int argc, char *argv[]) {
     g_signal_connect(G_OBJECT(button1), "clicked", G_CALLBACK(b1), NULL);
     g_signal_connect(G_OBJECT(button2), "clicked", G_CALLBACK(b2), NULL);
     g_signal_connect(G_OBJECT(button3), "clicked", G_CALLBACK(b3), NULL);
-
+	
     gtk_container_add(GTK_CONTAINER(bbox), button1);
+    gtk_container_add(GTK_CONTAINER(bbox), GTK_WIDGET(entry));
     gtk_container_add(GTK_CONTAINER(bbox), button2);
     gtk_container_add(GTK_CONTAINER(bbox), button3);
     gtk_container_add(GTK_CONTAINER(vbox), bbox);

@@ -8,14 +8,16 @@ const int RAZ = 1000;
 typedef int TElem;
 typedef TElem TMatr[RAZ][RAZ];
 
+unsigned int n;
+
 /* 
  * создание матрицы
  * чтение исходных данных
  * сортировка матрицы
  */
 
-int getN(){
-	int n;
+int getNFromFile(){
+	
 	ifstream fin("input.txt");
 	fin >> n;
 	return n;
@@ -23,7 +25,6 @@ int getN(){
 
 void input_matrix(TMatr a){
 	
-	int n;
 	ifstream fin("input.txt");
 	fin >> n;
 	
@@ -35,8 +36,6 @@ void input_matrix(TMatr a){
 
 void rand_input_matrix(TMatr a){
 	
-	int n = getN();
-	
 	for(int i = 0; i < 2*n; i++)
 		for(int j = 0; j < 2*n; j++)
 				a[i][j] = 2*n-i;
@@ -45,16 +44,12 @@ void rand_input_matrix(TMatr a){
 
 void zerofication(TMatr a){
 	
-	int n = getN();
-	
 	for(int i = 0; i < 2*n; i++)
 		for(int j = 0; j < 2*n-1-i; j++)
 				a[i][j] = 0;
 }
 
 void sorting(TMatr a){
-	
-	int n = getN();
 		
 	int CollumnMin, t, MinInd;
 		
@@ -79,8 +74,6 @@ void sorting(TMatr a){
 }
 
 void output_matrix(TMatr a){
-	
-	int n = getN();
 	
 	for(int i = 0; i < 2*n; i++){
 		for(int j = 0; j < 2*n; j++)
