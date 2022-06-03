@@ -8,24 +8,23 @@ const int RAZ = 1000;
 typedef int TElem;
 typedef TElem TMatr[RAZ][RAZ];
 
-unsigned int n;
+int n;
+ 
+int nCheck(int n){
+	if((n >= 1)&&(n <= (RAZ/2))) return 1;
+	else return 0;
+}
 
-/* 
- * создание матрицы
- * чтение исходных данных
- * сортировка матрицы
- */
-
-int getNFromFile(){
+int getNFromFile(char *filename){
 	
-	ifstream fin("input.txt");
+	ifstream fin(filename);
 	fin >> n;
 	return n;
 }
 
-void input_matrix(TMatr a){
+void input_matrix(TMatr a, char *filename){
 	
-	ifstream fin("input.txt");
+	ifstream fin(filename);
 	fin >> n;
 	
 	for(int i = 0; i < 2*n; i++)
@@ -36,9 +35,13 @@ void input_matrix(TMatr a){
 
 void rand_input_matrix(TMatr a){
 	
+	int k = 0;
+	
 	for(int i = 0; i < 2*n; i++)
-		for(int j = 0; j < 2*n; j++)
-				a[i][j] = 2*n-i;
+		for(int j = 0; j < 2*n; j++){
+				a[i][j] = k;
+				k++;
+		}
 	
 }
 
@@ -74,6 +77,8 @@ void sorting(TMatr a){
 }
 
 void output_matrix(TMatr a){
+	
+	cout << endl << "--------------------" << endl;
 	
 	for(int i = 0; i < 2*n; i++){
 		for(int j = 0; j < 2*n; j++)

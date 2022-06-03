@@ -9,12 +9,6 @@ GtkWidget *table_box;
 GtkWidget *sorted_box;
 GtkEntry *entry;
 
-/*
-int random_between(int x, int y) {
-    return x + (rand() % static_cast<int>(y - x + 1));
-}
-*/
-
 TMatr a;
 
 void delete_table(GtkWidget *w) {
@@ -25,33 +19,9 @@ void delete_table(GtkWidget *w) {
     g_list_free(children);
 }
 
-/*
-void fill_table(GtkWidget *table, int rows, int columns) {
-    g_print("--------------------\n");
-    int n;
-    ifstream fin("input.txt");
-	fin >> n;
-    for (int i=0; i<rows; i++) {
-        for (int k=0; k<columns; k++) {
-			int a;
-			fin >> a;
-            //int rnd = random_between(1, 1099);
-            //int rnd = 0;
-            // std::string text = "[" + std::to_string(i) + "," + std::to_string(k) + "]:";
-            std::string text = "";
-            text += std::to_string(a);
-            // write to gui
-            GtkWidget *label0 = gtk_label_new(text.c_str());
-            gtk_table_attach(GTK_TABLE(table), label0,  k, k+1, i, i+1, GTK_FILL, GTK_FILL, 0, 0);
-            g_print(text.c_str());
-            g_print("  ");
-        }
-        g_print("\n");
-    }
-}*/
-
 void fill_table(GtkWidget *table, int rows, int columns, TMatr a) {
-    g_print("--------------------\n");
+    
+    output_matrix(a);
     
     for (int i=0; i<rows; i++) {
         for (int k=0; k<columns; k++) {
@@ -60,66 +30,11 @@ void fill_table(GtkWidget *table, int rows, int columns, TMatr a) {
             // write to gui
             GtkWidget *label0 = gtk_label_new(text.c_str());
             gtk_table_attach(GTK_TABLE(table), label0, k, k+1, i, i+1, GTK_FILL, GTK_FILL, 0, 0);
-            g_print(text.c_str());
-            g_print("  ");
         }
-        g_print("\n");
     }
 }
 
-/*
-void create_table(GtkWidget *widget, gpointer data) {
-    delete_table();
-    int rows = (getN())*2; //random_between(3, 8);
-    int columns = (getN())*2;
-    GtkWidget *table = gtk_table_new(rows, columns, FALSE);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
-    fill_table(table, rows, columns);
-    gtk_container_add(GTK_CONTAINER(table_box), table);
-    gtk_widget_show_all(window);
-}*/
-
-/*
-void create_table(int i, int j) {
-    delete_table(table_box);
-    delete_table(sorted_box);
-	
-    int n;
-	ifstream fin("input.txt");
-	fin >> n;
-    int rows = 2*n;
-    int columns = 2*n;
-	TElem **a = new TElem* [2*n];
-	for(int i = 0; i < 2*n; i++)
-		a[i] = new TElem [2*n];
-		
-	if(i == 1){
-		input_matrix(n, a);
-	}
-	if(i == 2){
-		rand_input_matrix(n, a);
-	}
-    GtkWidget *table = gtk_table_new(rows, columns, FALSE);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 20);
-    fill_table(table, rows, columns, a);
-	gtk_container_add(GTK_CONTAINER(table_box), table);
-	if(j == 2){
-		zerofication(n, a);
-		sorting(n, a);
-	}
-
-	if(j == 2){
-		GtkWidget *table = gtk_table_new(rows, columns, FALSE);
-		gtk_table_set_col_spacings(GTK_TABLE(table), 20);
-		fill_table(table, rows, columns, a);
-		gtk_container_add(GTK_CONTAINER(sorted_box), table);
-	}
-    
-    gtk_widget_show_all(window);
-}
-*/
-
-void create_table(int i, TMatr a) {
+void create_table1(TMatr a, char *filename) {
 	
     delete_table(table_box);
     delete_table(sorted_box);
@@ -127,12 +42,7 @@ void create_table(int i, TMatr a) {
 	int rows = 2*n;
     int columns = 2*n;
 	
-	if(i == 1){
-		input_matrix(a);
-	}
-	if(i == 2){
-		rand_input_matrix(a);
-	}
+	input_matrix(a, filename);
 	
     GtkWidget *table = gtk_table_new(rows, columns, FALSE);
     gtk_table_set_col_spacings(GTK_TABLE(table), 20);
@@ -142,10 +52,75 @@ void create_table(int i, TMatr a) {
     gtk_widget_show_all(window);
 }
 
-void create_sorted(TMatr a) {
+void create_table2(TMatr a) {
 	
-    //delete_table(table_box);
-    //delete_table(sorted_box);
+    delete_table(table_box);
+    delete_table(sorted_box);
+	
+	if(nCheck(n)){
+		int rows = 2*n;
+		int columns = 2*n;
+		
+		rand_input_matrix(a);
+			
+		GtkWidget *table = gtk_table_new(rows, columns, FALSE);
+		gtk_table_set_col_spacings(GTK_TABLE(table), 20);
+		fill_table(table, rows, columns, a);
+		gtk_container_add(GTK_CONTAINER(table_box), table);
+		
+		gtk_widget_show_all(window);
+	}
+	else{
+		
+		GtkWidget *dialog;
+        GtkWidget *label;
+        GtkWidget *content_area;
+
+        /* создать диалог */
+        dialog = gtk_dialog_new_with_buttons("Ошибка",
+                                             NULL,
+                                             GTK_DIALOG_MODAL, // | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                             GTK_STOCK_OK,
+                                             GTK_RESPONSE_ACCEPT,
+                                             NULL);
+
+        /* получить контейнер, в который будем пихать метку */
+        content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+
+        /* сама метка */
+        label = gtk_label_new("\n Некорректное значение n: \n 1 <= 2*N <= 1000 ");
+        gtk_container_add(GTK_CONTAINER(content_area), label);
+        gtk_widget_show(label);
+
+        /* запускаем диалог */
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        /* а потом прячем */
+        gtk_widget_destroy(dialog);
+		
+		/*
+		GtkMessageDialog errorDial ("1 <= 2*N <= RAZ",
+									false,
+									GTK_MESSAGE_ERROR,
+									GTK_BUTTONS_OK,
+									true);
+        //errorDial->set_title("Error !");
+        gtk_dialog_run (GTK_DIALOG (errorDial));
+        /*
+        GtkWidget *dialog
+        GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+		dialog = gtk_message_dialog_new (parent_window,
+										 flags,
+										 GTK_MESSAGE_ERROR,
+										 GTK_BUTTONS_CLOSE,
+										 "Error");
+		gtk_dialog_run (GTK_DIALOG (dialog));
+		gtk_widget_destroy (dialog);
+		*/
+		
+	}
+}
+
+void create_sorted(TMatr a) {
 	
 	zerofication(a);
 	sorting(a);
@@ -162,27 +137,8 @@ void create_sorted(TMatr a) {
 }
 
 void b1(GtkWidget *widget, gpointer data) {
-	n = getNFromFile();
-	create_table(1, a);
-}
-
-void b2(GtkWidget *widget, gpointer data) {
-	
-	const char *value;
-    value = gtk_entry_get_text (entry);
-    stringstream strValue;
-	strValue << value;
-	strValue >> n;
-    create_table(2, a);
-}
-
-void b3(GtkWidget *widget, gpointer data) {
-	create_sorted(a);
-}
-
-/*
-void open_table(GtkWidget *widget, gpointer data) {
-    GtkWidget *dialog;
+	//....
+	GtkWidget *dialog;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
     gint res;
 
@@ -198,30 +154,33 @@ void open_table(GtkWidget *widget, gpointer data) {
         char *filename;
         GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename(chooser);
-        // open_file (filename);
+        n = getNFromFile(filename);
+		create_table1(a, filename);
         g_print(filename);
         g_free (filename);
     }
     gtk_widget_destroy (dialog);
+	
 }
-*/
+
+void b2(GtkWidget *widget, gpointer data) {
+	
+	const char *value;
+    value = gtk_entry_get_text (entry);
+    stringstream strValue;
+	strValue << value;
+	strValue >> n;
+    create_table2(a);
+}
+
+void b3(GtkWidget *widget, gpointer data) {
+	create_sorted(a);
+}
 
 int main(int argc, char *argv[]) {
-	
-	/*
-	int n;
-	ifstream fin("input.txt");
-	fin >> n;
-	
-	TElem **a = new TElem* [2*n];
-	for(int i = 0; i < 2*n; i++)
-		a[i] = new TElem [2*n];
-	*/
     
     GtkWidget *vbox;
     GtkWidget *bbox;
-    
-    
 
     gtk_init(&argc, &argv);
 
